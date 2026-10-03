@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 import os
 import pymysql
@@ -29,6 +29,99 @@ def get_connection():
 
 app = Flask(__name__)
 
+# ====================================================
+# 방명록 (guestbook)
+# ====================================================
+
+# 방명록 생성
+@app.route('/api/guestbook', methods=['POST'])
+def create_guestbook() :
+    data = request.get_json(silent=True)
+
+    if data is None:
+        return jsonify({
+            'message': '요청 데이터가 없습니다.'
+        }), 400
+
+    if 'writer' not in data:
+        return jsonify({
+            'message': 'writer가 존재하지 않습니다.'
+        }), 400
+
+    if 'contents' not in data:
+        return jsonify({
+            'message': 'contents가 존재하지 않습니다.'
+        }), 400
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    try :
+        writer = data.get('writer')
+        contents = data.get('contents')
+
+        cur.execute(
+            '''
+                INSERT INTO guestbook (writer, contents) VALUES (%s, %s)
+            ''',
+            (writer, contents)
+        )
+
+        conn.commit()
+
+        return jsonify({
+            'message': '방명록이 등록되었습니다.'
+        }), 201
+
+    except pymysql.MySQLError as e:
+        # DB 작업 중 오류가 발생하면 변경사항 취소
+        if conn is not None:
+            conn.rollback()
+
+        print(e)
+
+        return jsonify({
+            'message': 'create_guestbook() DB 처리 실패'
+        }), 500
+
+    finally:
+        if cur is not None:
+            cur.close()
+
+        if conn is not None:
+            conn.close()
+
+# 방명록 조회
+@app.route('/api/guestbook', methods=['GET'])
+def get_guestbook() :
+    conn = get_connection()
+    cur = conn.cursor(pymysql.cursors.DictCursor)
+
+    try :
+        cur.execute(
+            '''
+                SELECT id, writer, contents, reg_date FROM guestbook
+            '''
+        )
+
+        guestbook = cur.fetchall()
+
+        return jsonify({
+            "guestbook" : guestbook
+        }), 200
+    except pymysql.MySQLError as e:
+        print(e)
+
+        return jsonify({
+            'message': 'get_guestbook() DB 처리 실패'
+        }), 500
+
+    finally:
+        if cur is not None:
+            cur.close()
+
+        if conn is not None:
+            conn.close()
 @app.route('/api/test-db')
 def test_db():
     conn = get_connection()
