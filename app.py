@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from dotenv import load_dotenv
 import os
 import pymysql
@@ -297,9 +297,13 @@ def test_db():
     return 'DB 연결 성공'
 
 
+# =========================================================
+# 기본 페이지
+# =========================================================
+
 @app.route('/')
 def index():
-    return 'Wedding Invitation Service'
+    return render_template('index.html')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Wedding Invitation</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+<body>
+    <main>
+        <section>
+            <h1>OUR WEDDING DAY</h1>
+
+            <div id="countdown">
+                <div>
+                    <span id="days">0</span>
+                    <span>DAYS</span>
+                </div>
+
+                <div>
+                    <span id="hours">0</span>
+                    <span>HOURS</span>
+                </div>
+
+                <div>
+                    <span id="minutes">0</span>
+                    <span>MINUTES</span>
+                </div>
+
+                <div>
+                    <span id="seconds">0</span>
+                    <span>SECONDS</span>
+                </div>
+            </div>
+
+            <p id="countdown-message"></p>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

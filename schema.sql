@@ -30,3 +30,7 @@ SHOW TABLES;
 -- 테이블 구조 조회
 DESC guestbook;
 DESC attendance;
+
+select * from guestbook;
+
+select * from attendance;
